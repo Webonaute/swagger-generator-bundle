@@ -1,5 +1,20 @@
-import { Injectable } from "@angular/core";
-import { AppHttp } from './AppHttp';
+import {Http, Headers, RequestOptionsArgs, Response, URLSearchParams} from '@angular/http';
+import {Injectable, Optional} from '@angular/core';
+import {Observable} from 'rxjs/Observable';
+import * as models from '../model/models';
+import 'rxjs/Rx';
+
+/* tslint:disable:no-unused-variable member-ordering */
+
+'use strict';
+
+
+
+
+
+
+
+
 {#
 {% for className, property in swagger.definitions %}
 import {{ '{ ' ~ className ~ 'Repository }' }} from "./Repository/{{ className }}Repository";
