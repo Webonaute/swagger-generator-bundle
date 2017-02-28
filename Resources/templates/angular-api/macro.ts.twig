@@ -1,0 +1,22 @@
+{% macro create_path(path, operationParameters, type_mapping) %}
+{% set replacement = "" %}
+{% for parameter in operationParameters %}
+{% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}
+{% set replacement = replacement ~ ".replace('{' + '" ~ parameter.name ~ "' + '}', " ~ parameter|convert_type(type_mapping)|capitalize ~ "(" ~ parameter.name ~ "))"  %}
+{% endif %}
+{% endfor %}
+const path = this.basePath + '{{ path }}'{{ replacement }};
+{% endmacro %}
+
+{% macro list_operation_params(operationParameters, type_mapping) %}{% set params = "" %}{% for parameter in operationParameters %}{% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}{% set params = params ~ parameter.name ~ ": " ~ parameter|convert_type(type_mapping) ~ ", "  %}{% endif %}{% endfor %}{{ params }}{% endmacro %}
+{% macro list_operation_params_doc(operationParameters, type_mapping) %}{% set params = "" %}{% for parameter in operationParameters %}{% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}{% set params = params ~ "\n     * @param " ~ parameter.name ~ ""  %}{% endif %}{% endfor %}{{ params }}{% endmacro %}
+{% macro operation_params_require(operationParameters, type_mapping, operation) %}
+{% set params = "" %}
+{% for parameter in operationParameters %}
+{% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}
+        if ({{ parameter.name }} === null || {{ parameter.name }} === undefined) {
+            throw new Error('Required parameter {{ parameter.name }} was null or undefined when calling {{ operation.operationId|camelize|camelizeDash }}.');
+        }
+{% endif %}
+{% endfor %}
+{% endmacro %}

@@ -9,12 +9,23 @@ files:
         value: schema
         in:  '[swagger].definitions'
 
+  App/BaseModel/model.ts.twig:
+      fileName: "App/BaseModel/Base{{ definitionName|class_name }}.ts"
+      for:
+        key: definitionName
+        value: schema
+        in:  '[swagger].definitions'
+
   App/Model/model.ts.twig:
+      #overwrite: false
       fileName: "App/Model/{{ definitionName|class_name }}.ts"
       for:
         key: definitionName
         value: schema
         in:  '[swagger].definitions'
+
+  App/Model/models.ts.twig:
+      fileName: "App/Model/models.ts"
 
   App/Api.ts.twig: {}
       #overwrite: false

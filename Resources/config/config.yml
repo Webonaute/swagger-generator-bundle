@@ -43,6 +43,13 @@ draw_swagger_generator:
             - { filterName: explode, arguments: ['_'] }
             - { filterName: array_map, arguments: [ucfirst] }
             - { filterName: implode, arguments: [''] }
+      camelizeDash:
+        type: chain
+        parameters:
+          chain:
+            - { filterName: explode, arguments: ['-'] }
+            - { filterName: array_map, arguments: [ucfirst] }
+            - { filterName: implode, arguments: [''] }
       class_name:
         type: chain
         parameters:

@@ -1,0 +1,33 @@
+{% autoescape false %}
+{% set operationParameter = operation|extract_operation_parameters(dsg.registry.ts.type_mapping) %}
+    /**
+     *
+     *{{ macro.list_operation_params_doc(operation.parameters, dsg.registry.ts.type_mapping) }}
+     * @param extraHttpRequestParams
+     */
+    public {{ operation.operationId|camelize|camelizeDash }} ({{ macro.list_operation_params(operation.parameters, dsg.registry.ts.type_mapping) }} extraHttpRequestParams?: any ) : Observable<{{ getModelByOperation(operation, 'models.') }}> {
+
+        {{ macro.create_path(path, operation.parameters, dsg.registry.ts.type_mapping) }}
+
+        let queryParameters = new URLSearchParams();
+        let headerParams = this.defaultHeaders;
+
+{{ macro.operation_params_require(operation.parameters, dsg.registry.ts.type_mapping, operation) }}
+
+        let requestOptions: RequestOptionsArgs = {
+            method: 'GET',
+            headers: headerParams,
+            search: queryParameters
+        };
+
+        return this.http.request(path, requestOptions)
+            .map((response: Response) => {
+                if (response.status === 204) {
+                    return undefined;
+                } else {
+                    return response.json();
+                }
+            });
+        }
+
+{% endautoescape %}

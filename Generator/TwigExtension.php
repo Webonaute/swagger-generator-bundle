@@ -2,7 +2,11 @@
 
 namespace Draw\SwaggerGeneratorBundle\Generator;
 
+use Draw\Swagger\Schema\BodyParameter;
 use Draw\Swagger\Schema\Operation;
+use Draw\Swagger\Schema\PathParameter;
+use Draw\Swagger\Schema\QueryParameter;
+use Draw\Swagger\Schema\Schema;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Twig_Environment;
 use Twig_SimpleFilter;
@@ -29,6 +33,20 @@ class TwigExtension extends \Twig_Extension
         $this->configuration = $configuration;
     }
 
+    public function getFunctions()
+    {
+        $methods = [];
+        $methods[] = new \Twig_SimpleFunction("getModelByOperation", [$this, 'getModelByOperation']);
+        return $methods;
+    }
+
+    public function getTests()
+    {
+        $methods = [];
+        $methods[] = new \Twig_SimpleTest("instanceof", [$this, "isInstanceof"]);
+        return $methods;
+    }
+
     public function initRuntime(Twig_Environment $environment)
     {
         $this->environment = $environment;
@@ -39,10 +57,11 @@ class TwigExtension extends \Twig_Extension
     public function getGlobals()
     {
         $registry = $this->configuration['registry'];
+
         return array(
-          'dsg' => array(
-            'registry' => new Registry($registry)
-          )
+            'dsg' => array(
+                'registry' => new Registry($registry),
+            ),
         );
     }
 
@@ -57,10 +76,12 @@ class TwigExtension extends \Twig_Extension
         $filters[] = new Twig_SimpleFilter('path_key_map', array($this, 'pathKeyMap'), $options);
         $filters[] = new Twig_SimpleFilter('key_filter', array($this, 'keyFilter'), $options);
         $filters[] = new Twig_SimpleFilter('convert_type', array($this, 'convertType'), $options);
-        $filters[] = new Twig_SimpleFilter('extract_operation_parameters', array(
-          $this,
-          'extractOperationParameters'
-        ), $options);
+        $filters[] = new Twig_SimpleFilter(
+            'extract_operation_parameters', array(
+            $this,
+            'extractOperationParameters',
+        ), $options
+        );
 
         foreach ($this->configuration['php_functions'] as $phpFunctionName => $configuration) {
             $position = $configuration['argumentPosition'];
@@ -71,6 +92,7 @@ class TwigExtension extends \Twig_Extension
                 array_splice($arguments, $position, 0, array($argument));
 
                 $result = call_user_func_array($phpFunctionName, $arguments);
+
                 return $result;
             };
 
@@ -83,10 +105,10 @@ class TwigExtension extends \Twig_Extension
                     $extension = $this;
                     $chain = $filterConfiguration['parameters']['chain'];
                     $filters[] = new \Twig_SimpleFilter(
-                      $filterName,
-                      function ($argument) use ($extension, $chain, $filterName) {
-                          return $extension->callChainFilter($argument, $chain, $filterName);
-                      }
+                        $filterName,
+                        function ($argument) use ($extension, $chain, $filterName) {
+                            return $extension->callChainFilter($argument, $chain, $filterName);
+                        }
                     );
                     break;
 
@@ -94,6 +116,26 @@ class TwigExtension extends \Twig_Extension
         }
 
         return $filters;
+    }
+
+    /**
+     * @param $var
+     * @param $instance
+     * @return bool
+     */
+    public function isInstanceof($var, $instance) {
+        return  $var instanceof $instance;
+    }
+
+    public function getModelByOperation(Operation $operation, $prefix = ''){
+        /** @var Schema $param */
+        if (isset($operation->responses[200])) {
+            $schema = $operation->responses[200]->schema;
+            $model = $prefix.str_replace('#/definitions/', '', $schema->ref);
+        }else{
+            $model = "";
+        }
+        return $model;
     }
 
     public function pathFilter($argument, $path)
@@ -113,6 +155,7 @@ class TwigExtension extends \Twig_Extension
             array_unshift($arguments, $value);
             $result[$key] = call_user_func_array($callable, $arguments);
         }
+
         return $result;
 
     }
@@ -126,6 +169,7 @@ class TwigExtension extends \Twig_Extension
             array_unshift($arguments, $argument);
             $argument = call_user_func_array($filter->getCallable(), $arguments);
         }
+
         return $argument;
     }
 
@@ -134,9 +178,9 @@ class TwigExtension extends \Twig_Extension
         $result = array();
 
         $keys = $this->filterMap(
-          array_combine($keys = array_keys($argument), $keys),
-          $filterName,
-          $options
+            array_combine($keys = array_keys($argument), $keys),
+            $filterName,
+            $options
         );
 
         foreach ($keys as $original => $modified) {
@@ -171,12 +215,18 @@ class TwigExtension extends \Twig_Extension
         }
 
         foreach ($operation->parameters as $parameter) {
-            if ($parameter->in == "body") {
-                //@todo;
+            if ($parameter instanceof PathParameter){
+                $type = "path";
+            }elseif ($parameter instanceof QueryParameter){
+                $type = "query";
+            }elseif ($parameter instanceof BodyParameter){
+                $type = "body";
+            }else{
+                //not supported.
                 continue;
             }
 
-            $parameters->{$parameter->in}->{$parameter->name} = $this->convertType($parameter, $typeMapping);
+            $parameters->$type->{$parameter->name} = $this->convertType($parameter, $typeMapping);
         }
 
         return $parameters;
@@ -190,7 +240,8 @@ class TwigExtension extends \Twig_Extension
         } elseif (isset($schema->type)) {
             $type = $schema->type;
         } else {
-            throw new \RuntimeException('Cannot detect type');
+            $type = "string";
+            // throw new \RuntimeException('Cannot detect type');
         }
 
         if (array_key_exists($type, $mapping)) {
@@ -199,8 +250,8 @@ class TwigExtension extends \Twig_Extension
 
         if (strpos($type, '#/definitions/') === 0) {
             return call_user_func(
-              $this->environment->getFilter('class_name')->getCallable(),
-              str_replace('#/definitions/', '', $type)
+                $this->environment->getFilter('class_name')->getCallable(),
+                str_replace('#/definitions/', '', $type)
             );
         }
 

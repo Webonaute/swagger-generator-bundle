@@ -1,0 +1,8 @@
+{% for propertyName, property in schema.properties %}
+{% set type = property|convert_type(dsg.registry.ts.type_mapping) %}
+{% if type == "array" %}{% set type = property.items|convert_type(dsg.registry.ts.type_mapping) %}{% endif %}
+{% if type|is_class(dsg.registry.ts.type_mapping) %}
+import {{ '{ ' ~ type ~ ' }' }} from "./{{ type }}";
+{% endif %}
+{% endfor %}
+
