@@ -2,12 +2,12 @@ tags: ['language:typescript','framework:angular']
 files:
   README.md.twig: {}
 
-  App/Repository/repository.ts.twig:
-      fileName: "App/Repository/{{ definitionName|class_name }}Repository.ts"
-      for:
-        key: definitionName
-        value: schema
-        in:  '[swagger].definitions'
+  App/Api/Api.ts.twig:
+      #overwrite: false
+      fileName: "App/Api/Api{{ tag|class_name }}.ts"
+      forPathExpression:
+        key: tag
+        expression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
 
   App/BaseModel/model.ts.twig:
       fileName: "App/BaseModel/Base{{ definitionName|class_name }}.ts"
@@ -27,7 +27,12 @@ files:
   App/Model/models.ts.twig:
       fileName: "App/Model/models.ts"
 
-  App/Api.ts.twig: {}
+  App/Api/Apis.ts.twig:
+      fileName: "App/Api/apis.ts"
+      with:
+          tags:
+              pathExpression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
+              unique: true
       #overwrite: false
   App/AppHttp.ts.twig: {}
       #overwrite: false

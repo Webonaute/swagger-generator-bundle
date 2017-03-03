@@ -127,15 +127,28 @@ class TwigExtension extends \Twig_Extension
         return  $var instanceof $instance;
     }
 
-    public function getModelByOperation(Operation $operation, $prefix = ''){
+    public function getModelByOperation(Operation $operation, $prefix = '', $default = "")
+    {
+        $ret = $default;
+        $model = null;
+
         /** @var Schema $param */
         if (isset($operation->responses[200])) {
             $schema = $operation->responses[200]->schema;
-            $model = $prefix.str_replace('#/definitions/', '', $schema->ref);
-        }else{
-            $model = "";
+            if ($schema->ref === null) {
+                if (isset($schema->items->ref)) {
+                    $model = $schema->items->ref;
+                }
+            } else {
+                $model = $schema->ref;
+            }
+
+            if ($model !== null) {
+                $ret = $prefix.str_replace('#/definitions/', '', $model);
+            }
         }
-        return $model;
+
+        return $ret;
     }
 
     public function pathFilter($argument, $path)

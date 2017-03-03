@@ -70,24 +70,48 @@ class Generator
             );
             if (isset($fileConfiguration['with'])) {
                 foreach ($fileConfiguration['with'] as $key => $configuration) {
-                    if(is_string($configuration)) {
-                        $context[$key] = $propertyAccessor->getValue($context, $configuration);
+                    if (isset($configuration['pathExpression'])){
+                        $expressionResults = \JmesPath\Env::search($configuration['pathExpression'],$context);
+                        if (isset($configuration['unique']) && $configuration['unique'] === true && is_array($expressionResults)) {
+                            $expressionResults = array_unique($expressionResults);
+                        }
+                        $context[$key] = $expressionResults;
+                    }else {
+                        if (is_string($configuration)) {
+                            $context[$key] = $propertyAccessor->getValue($context, $configuration);
+                        }
                     }
                 }
             }
 
-            if (!isset($fileConfiguration['for'])) {
-                $this->renderToFile($path, $template, $fileName, $context, $fileConfiguration);
-            } else {
+            if (isset($fileConfiguration['for'])) {
                 $for = $fileConfiguration['for'];
                 $key = $for['key'];
                 $value = $for['value'];
                 $in = $for['in'];
-                foreach ($propertyAccessor->getValue($context, $in) as $_key => $_value) {
+                $values = $propertyAccessor->getValue($context, $in);
+                foreach ($values as $_key => $_value) {
                     $context[$key] = $_key;
                     $context[$value] = $_value;
                     $this->renderToFile($path, $template, $fileName, $context, $fileConfiguration);
                 }
+            }elseif(isset($fileConfiguration['forPathExpression'])){
+                $for = $fileConfiguration['forPathExpression'];
+                $key = $for['key'];
+                //$value = $for['value'];
+
+                $expressionResults = \JmesPath\Env::search($for['expression'],$context);
+                if (!is_array($expressionResults) || empty($expressionResults)){
+                    throw new \Exception("Expression \"$for\" returned empty result.");
+                }
+                $expressionResults = array_unique($expressionResults);
+                foreach ($expressionResults as $expressionResult) {
+                    $context[$key] = $expressionResult;
+                    //$context[$value] = $_value;
+                    $this->renderToFile($path, $template, $fileName, $context, $fileConfiguration);
+                }
+            }else{
+                $this->renderToFile($path, $template, $fileName, $context, $fileConfiguration);
             }
         }
     }

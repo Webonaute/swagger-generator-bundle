@@ -1,52 +1,7 @@
 {% autoescape false %}
-{% import '@draw_swagger_generator/angular-api/macro.ts.twig' as macro %}
-
-import { Inject, Injectable, Optional, OpaqueToken }         from '@angular/core';
-import { Http, Headers, URLSearchParams }                    from '@angular/http';
-import { RequestMethod, RequestOptions, RequestOptionsArgs } from '@angular/http';
-import { Response, ResponseContentType }                     from '@angular/http';
-
-import { Observable }                                        from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
-
-import * as models                                           from './Model/models';
-
-export const BASE_PATH = new OpaqueToken('https://localhost');
-
-/* tslint:disable:no-unused-variable member-ordering */
-
-@Injectable()
-export class Api
-{
-    protected basePath = 'https://localhost';
-    public defaultHeaders : Headers = new Headers();
-
-    constructor(protected http: Http, @Optional() basePath: string) {
-        if (basePath) {
-            this.basePath = basePath;
-        }
-    }
-
-{% for path, pathItem in swagger.paths %}
-{% for method, operation in pathItem.getOperations() %}
-
-{% include [current_directory ~ "/api_get.twig"] %}
-    {#public {{ operation.operationId|camelize|camelizeDash }}(): void
-    {
-        return this.appHttp.{{ method }}('{{ path }}')
-                .map(
-                        (response: Response) => {
-                            return true;
-                        }
-                );
-    }
-    #}
-
-
+{% for tagsName in swagger.definitions %}
+export * from './{{ tagsName }}';
 {% endfor %}
-{% endfor %}
-}
-
 
 
 
