@@ -1,8 +1,0 @@
-{% autoescape false %}
-{% for tagsName in tags %}
-export * from './Api{{ tagsName|class_name }}';
-{% endfor %}
-
-
-
-{% endautoescape %}

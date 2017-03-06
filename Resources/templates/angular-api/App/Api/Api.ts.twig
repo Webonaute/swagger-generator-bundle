@@ -1,69 +1,12 @@
 {% autoescape false %}
-
-{% import '@draw_swagger_generator/angular-api/macro.ts.twig' as macro %}
-import { Inject, Injectable, Optional, OpaqueToken }         from '@angular/core';
-import { Http, Headers, URLSearchParams }                    from '@angular/http';
-import { RequestMethod, RequestOptions, RequestOptionsArgs } from '@angular/http';
-import { Response, ResponseContentType }                     from '@angular/http';
-
-import { Observable }                                        from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
-
-import * as models                                           from './Model/models';
+import * as Base{{ tag|class_name }}    from './BaseApi/{{ tag|class_name }}';
 
 /* tslint:disable:no-unused-variable member-ordering */
 
 @Injectable()
-export class Api{{ tag|class_name }}
+export class Api{{ tag|class_name }} extends Base{{ tag|class_name }}
 {
-    protected basePath = 'https://localhost';
-    public defaultHeaders : Headers = new Headers();
 
-    constructor(protected http: Http, @Optional() basePath: string) {
-        if (basePath) {
-            this.basePath = basePath;
-        }
-    }
-
-{% for path, pathItem in swagger.paths %}
-{% for method, operation in pathItem.getOperations() %}
-{% if tag in operation.tags %}
-{% set operationParameter = operation|extract_operation_parameters(dsg.registry.ts.type_mapping) %}
-    /**
-     *
-     *{{ macro.list_operation_params_doc(operation.parameters, dsg.registry.ts.type_mapping) }}
-     * {% if method in ['post','put'] %}@param body{% endif %}{{ " " }}
-     * @param extraHttpRequestParams
-     */
-    public {{ operation.operationId|camelize|camelizeDash }} ({{ macro.list_operation_params(operation.parameters, dsg.registry.ts.type_mapping) }}{% if method in ['post','put'] %}body?: {{ getModelByOperation(operation, 'models.', '{}') }},{% endif %} extraHttpRequestParams?: any ) : Observable<{{ getModelByOperation(operation, 'models.', '{}') }}> {
-
-        {{ macro.create_path(path, operation.parameters, dsg.registry.ts.type_mapping) }}
-
-        let queryParameters = new URLSearchParams();
-        let headerParams = this.defaultHeaders;
-
-{{ macro.operation_params_require(operation.parameters, dsg.registry.ts.type_mapping, operation) }}
-
-        let requestOptions: RequestOptionsArgs = {
-            method: '{{ method|upper }}',
-            headers: headerParams,
-            search: queryParameters
-        };
-        {% if method in ['post','put'] %}requestOptions.body = JSON.stringify(body);
-        {% endif %}
-
-        return this.http.request(path, requestOptions)
-            .map((response: Response) => {
-{{ macro.handle_responses(operation) }}
-            });
-    }
-
-{% endif %}
-{% endfor %}
-{% endfor %}
 }
-
-
-
-
+    
 {% endautoescape %}
