@@ -20,3 +20,20 @@ const path = this.basePath + '{{ path }}'{{ replacement }};
 {% endif %}
 {% endfor %}
 {% endmacro %}
+{% macro handle_responses(operation) %}
+{% import _self as macro %}{% if operation.responses|length > 0 %}
+{% for responseCode, response in operation.responses %}
+                {% if loop.first %}if (response.status === {{ responseCode }}) {{ "{" }}{% else %}{{ "}" }}else if(response.status === {{ responseCode }}) {
+                {% endif %}
+
+                    {% if responseCode == "200" %}{{ macro.handle_return_hydratation(operation) }}{% else %}return undefined;{% endif %}
+{% endfor %}
+
+                }else{
+                    return undefined;
+                }
+{% else %}
+                {{ macro.handle_return_hydratation(operation) }}
+{% endif %}
+{% endmacro %}
+{% macro handle_return_hydratation(operation) %}{% set model = getModelByOperation(operation, 'models.', '') %}{% if model == "" %}return response.json();{% else %}return new {{ model }}.hydrate(response.json());{% endif %}{% endmacro %}

@@ -1,6 +1,6 @@
 {% autoescape false %}
-{% import '@draw_swagger_generator/angular-api/macro.ts.twig' as macro %}
 
+{% import '@draw_swagger_generator/angular-api/macro.ts.twig' as macro %}
 import { Inject, Injectable, Optional, OpaqueToken }         from '@angular/core';
 import { Http, Headers, URLSearchParams }                    from '@angular/http';
 import { RequestMethod, RequestOptions, RequestOptionsArgs } from '@angular/http';
@@ -54,11 +54,7 @@ export class Api{{ tag|class_name }}
 
         return this.http.request(path, requestOptions)
             .map((response: Response) => {
-                if (response.status === 204) {
-                    return undefined;
-                } else {
-                    return response.json();
-                }
+{{ macro.handle_responses(operation) }}
             });
     }
 
