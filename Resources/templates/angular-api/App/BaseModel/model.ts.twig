@@ -30,17 +30,19 @@ export abstract class Base{{ definitionName|class_name }}
     public serialize(): any {
         return {
 {% for propertyName, property in schema.properties %}
-            {{ propertyName }}: this._{{ propertyName }}{% if loop.last == false %},{% endif %}{{ " " }}
+{% set type = property|convert_type(dsg.registry.ts.type_mapping) %}
+            {{ propertyName }}: this._{{ propertyName }}{% if type not in ["string", "integer", "number"] %}{% if type != "array" %}.serialize(){% else %}.map(({{ propertyName }})=>{{ propertyName }}.serialize()){% endif %}{% endif %}{% if loop.last == false %},{% endif %}{{ " " }}
 {% endfor %}
         };
     }
 
     // internal
-    public hydrate(object: any): void {
+    public hydrate(object: any): Base{{ definitionName|class_name }} {
 {% for propertyName, property in schema.properties %}
 {% set type = property|convert_type(dsg.registry.ts.type_mapping) %}
-        this._{{ propertyName }} = {% if type not in ["string", "integer"] %}{% if type != "array" %} new {{ type }}.hydrate(object.{{ propertyName }});{% else %}{{ property.items|convert_type(dsg.registry.ts.type_mapping) }}[]{% endif %}{% else %}object.{{ propertyName }};{% endif %}{{ " " }}
+        this._{{ propertyName }} = {% if type not in ["string", "integer", "number"] %}{% if type != "array" %}new {{ type }}().hydrate(object.{{ propertyName }});{% else %}object.{{ propertyName }}.map(({{ propertyName }})=>new {{ property.items|convert_type(dsg.registry.ts.type_mapping) }}().hydrate({{ propertyName }}));{% endif %}{% else %}object.{{ propertyName }};{% endif %}{{ " " }}
 {% endfor %}
+        return this;
     }
 }
 {% endautoescape %}

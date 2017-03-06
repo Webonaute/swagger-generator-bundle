@@ -36,4 +36,4 @@ const path = this.basePath + '{{ path }}'{{ replacement }};
                 {{ macro.handle_return_hydratation(operation) }}
 {% endif %}
 {% endmacro %}
-{% macro handle_return_hydratation(operation) %}{% set model = getModelByOperation(operation, 'models.', '') %}{% if model == "" %}return response.json();{% else %}return new {{ model }}.hydrate(response.json());{% endif %}{% endmacro %}
+{% macro handle_return_hydratation(operation) %}{% set model = getModelByOperation(operation, 'models.', '') %}{% if model == "" %}return response.json();{% else %}return new {{ model }}().hydrate(response.json());{% endif %}{% endmacro %}

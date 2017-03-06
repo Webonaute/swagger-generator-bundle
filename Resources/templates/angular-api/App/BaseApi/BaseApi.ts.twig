@@ -1,20 +1,20 @@
 {% autoescape false %}
 
 {% import '@draw_swagger_generator/angular-api/macro.ts.twig' as macro %}
-import { Inject, Injectable, Optional, OpaqueToken }         from '@angular/core';
-import { Http, Headers, URLSearchParams }                    from '@angular/http';
+import { Inject, Injectable, Optional, OpaqueToken } from '@angular/core';
+import { Http, Headers, URLSearchParams } from '@angular/http';
 import { RequestMethod, RequestOptions, RequestOptionsArgs } from '@angular/http';
-import { Response, ResponseContentType }                     from '@angular/http';
+import { Response, ResponseContentType } from '@angular/http';
 
-import { Observable }                                        from 'rxjs/Observable';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
-import * as models                                           from './Model/models';
+import * as models from './Model/models';
 
 /* tslint:disable:no-unused-variable member-ordering */
 
 @Injectable()
-export class Api{{ tag|class_name }}
+export class BaseApi{{ tag|class_name }}
 {
     protected basePath = 'https://localhost';
     public defaultHeaders : Headers = new Headers();
@@ -35,7 +35,7 @@ export class Api{{ tag|class_name }}
      * {% if method in ['post','put'] %}@param body{% endif %}{{ " " }}
      * @param extraHttpRequestParams
      */
-    public {{ operation.operationId|camelize|camelizeDash }} ({{ macro.list_operation_params(operation.parameters, dsg.registry.ts.type_mapping) }}{% if method in ['post','put'] %}body?: {{ getModelByOperation(operation, 'models.', '{}') }},{% endif %} extraHttpRequestParams?: any ) : Observable<{{ getModelByOperation(operation, 'models.', '{}') }}> {
+    public {{ operation.operationId|camelize|lcfirst }} ({{ macro.list_operation_params(operation.parameters, dsg.registry.ts.type_mapping) }}{% if method in ['post','put'] %}body?: {{ getModelByOperation(operation, 'models.', '{}') }},{% endif %} extraHttpRequestParams?: any ) : Observable<{{ getModelByOperation(operation, 'models.', '{}') }}> {
 
         {{ macro.create_path(path, operation.parameters, dsg.registry.ts.type_mapping) }}
 

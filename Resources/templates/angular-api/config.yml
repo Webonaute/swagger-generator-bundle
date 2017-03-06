@@ -3,8 +3,15 @@ files:
   README.md.twig: {}
 
   App/Api/Api.ts.twig:
-      #overwrite: false
+      overwrite: false
       fileName: "App/Api/Api{{ tag|class_name }}.ts"
+      forPathExpression:
+        key: tag
+        expression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
+
+  App/BaseApi/BaseApi.ts.twig:
+      #overwrite: false
+      fileName: "App/BaseApi/BaseApi{{ tag|class_name }}.ts"
       forPathExpression:
         key: tag
         expression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
@@ -17,7 +24,7 @@ files:
         in:  '[swagger].definitions'
 
   App/Model/model.ts.twig:
-      #overwrite: false
+      overwrite: false
       fileName: "App/Model/{{ definitionName|class_name }}.ts"
       for:
         key: definitionName
@@ -35,6 +42,4 @@ files:
               unique: true
       #overwrite: false
   App/AppHttp.ts.twig: {}
-      #overwrite: false
-  App/Repository.ts.twig: {}
       #overwrite: false
