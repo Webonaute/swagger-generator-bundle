@@ -2,13 +2,13 @@
 {% set replacement = "" %}
 {% for parameter in operationParameters %}
 {% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}
-{% set replacement = replacement ~ ".replace('{' + '" ~ parameter.name ~ "' + '}', " ~ parameter|convert_type(type_mapping)|capitalize ~ "(" ~ parameter.name ~ "))"  %}
+{% set replacement = replacement ~ "\n          .replace('{' + '" ~ parameter.name ~ "' + '}', " ~ parameter|convert_type(type_mapping)|capitalize ~ "(" ~ parameter.name ~ "))"  %}
 {% endif %}
 {% endfor %}
 const path = this.basePath + '{{ path }}'{{ replacement }};
 {% endmacro %}
 
-{% macro list_operation_params(operationParameters, type_mapping) %}{% set params = "" %}{% for parameter in operationParameters %}{% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}{% set params = params ~ parameter.name ~ ": " ~ parameter|convert_type(type_mapping) ~ ", "  %}{% endif %}{% endfor %}{{ params }}{% endmacro %}
+{% macro list_operation_params(operationParameters, type_mapping) %}{% set params = "" %}{% for parameter in operationParameters %}{% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}{% set params = params ~ "\n           " ~ parameter.name ~ ": " ~ parameter|convert_type(type_mapping) ~ ","  %}{% endif %}{% endfor %}{{ params }}{% endmacro %}
 {% macro list_operation_params_doc(operationParameters, type_mapping) %}{% set params = "" %}{% for parameter in operationParameters %}{% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}{% set params = params ~ "\n     * @param " ~ parameter.name ~ ""  %}{% endif %}{% endfor %}{{ params }}{% endmacro %}
 {% macro operation_params_require(operationParameters, type_mapping, operation) %}
 {% set params = "" %}
@@ -23,13 +23,10 @@ const path = this.basePath + '{{ path }}'{{ replacement }};
 {% macro handle_responses(operation) %}
 {% import _self as macro %}{% if operation.responses|length > 0 %}
 {% for responseCode, response in operation.responses %}
-                {% if loop.first %}if (response.status === {{ responseCode }}) {{ "{" }}{% else %}{{ "}" }}else if(response.status === {{ responseCode }}) {
-                {% endif %}
-
-                    {% if responseCode == "200" %}{{ macro.handle_return_hydratation(operation) }}{% else %}return undefined;{% endif %}
+                {% if loop.first %}if (response.status === {{ responseCode }}) {{ "{\n" }}{% else %}{{ "}" }} else if (response.status === {{ responseCode }}) {{ "{" }}{% endif %}{{ "" }}
+                    {% if responseCode == "200" %}{{ macro.handle_return_hydratation(operation) }}{% elseif responseCode == "204" %}return undefined;{% else %}return response.json();{% endif %}{{ "" }}
 {% endfor %}
-
-                }else{
+                } else {
                     return undefined;
                 }
 {% else %}
