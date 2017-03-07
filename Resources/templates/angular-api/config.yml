@@ -31,11 +31,17 @@ files:
         value: schema
         in:  '[swagger].definitions'
 
-  App/Model/models.ts.twig:
-      fileName: "App/Model/models.ts"
+  App/Model/index.ts.twig:
+      fileName: "App/Model/index.ts"
 
-  App/Api/Apis.ts.twig:
-      fileName: "App/Api/apis.ts"
+  App/index.ts.twig:
+      fileName: "App/index.ts"
+
+  App/BaseModel/ModelInterface.ts.twig:
+      fileName: "App/BaseModel/ModelInterface.ts"
+
+  App/Api/index.ts.twig:
+      fileName: "App/Api/index.ts"
       with:
           tags:
               pathExpression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]

@@ -1,7 +1,5 @@
 {% autoescape false %}
 // Generated class {{ definitionName|class_name }}
-'use strict';
-import * as models from './models';
 
 {% include [current_directory ~ "/_imports.twig"] %}
 export class {{ definitionName|class_name }} extends Base{{ definitionName|class_name }} {

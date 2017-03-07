@@ -5,7 +5,7 @@
 {% set replacement = replacement ~ "\n          .replace('{' + '" ~ parameter.name ~ "' + '}', " ~ parameter|convert_type(type_mapping)|capitalize ~ "(" ~ parameter.name ~ "))"  %}
 {% endif %}
 {% endfor %}
-const path = this.basePath + '{{ path }}'{{ replacement }};
+const path = '{{ path }}'{{ replacement }};
 {% endmacro %}
 
 {% macro list_operation_params(operationParameters, type_mapping) %}{% set params = "" %}{% for parameter in operationParameters %}{% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}{% set params = params ~ "\n           " ~ parameter.name ~ ": " ~ parameter|convert_type(type_mapping) ~ ","  %}{% endif %}{% endfor %}{{ params }}{% endmacro %}
