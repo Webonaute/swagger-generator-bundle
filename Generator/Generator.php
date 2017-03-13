@@ -3,6 +3,7 @@
 namespace Draw\SwaggerGeneratorBundle\Generator;
 
 use Draw\Swagger\Schema\Swagger;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Yaml\Yaml;
 use Twig_Environment;
@@ -31,6 +32,11 @@ class Generator
      * @var Registry
      */
     private $registry;
+
+    /**
+     * @var OutputInterface $ouput
+     */
+    protected $output;
 
     private function defaultParameters()
     {
@@ -137,10 +143,19 @@ class Generator
     {
         $context['parameters'] = $this->defaultParameters();
 
-        $fileContent = $this->twig->render(
-          '@draw_swagger_generator/' . $template . '/' . $fileName,
-          $context
-        );
+        try {
+            $fileContent = $this->twig->render(
+              '@draw_swagger_generator/' . $template . '/' . $fileName,
+              $context
+            );
+        }catch (\Twig_Error_Loader $e){
+            //prevent script to completly crash on missing template.
+            //just continue and lets the user know something goes wrong.
+            if ($this->output !== null){
+                $this->output->writeln("<error>".$e->getMessage()."</error>");
+            }
+            return;
+        }
 
         $result = $this->cleanEnvironment();
 
@@ -169,6 +184,11 @@ class Generator
         }
 
         $this->fileWriter->writeFile($fileContent, $outputFilePath, $overwrite, $strategy);
+
+    }
+
+    public function setOutput(OutputInterface $output){
+        $this->output = $output;
     }
 
     private function cleanEnvironment()

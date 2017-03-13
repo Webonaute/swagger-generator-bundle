@@ -1,8 +1,0 @@
-{% autoescape false %}
-{% for tagsName in swagger.definitions %}
-export * from './{{ tagsName }}';
-{% endfor %}
-
-
-
-{% endautoescape %}

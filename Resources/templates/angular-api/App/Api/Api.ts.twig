@@ -1,13 +1,15 @@
 {% autoescape false %}
 // Generated class Api{{ tag|class_name }}
-import { Inject, Injectable, Optional, OpaqueToken } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { BaseApi{{ tag|class_name }} } from '../BaseApi/BaseApi{{ tag|class_name }}';
 
 /* tslint:disable:no-unused-variable member-ordering */
 
 @Injectable()
 export class Api{{ tag|class_name }} extends BaseApi{{ tag|class_name }} {
-
+    constructor(protected injector: Injector) {
+        super(injector);
+    }
 }
 
 {% endautoescape %}

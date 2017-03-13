@@ -2,13 +2,6 @@ tags: ['language:typescript','framework:angular']
 files:
   #README.md.twig: {}
 
-  App/Api/Api.ts.twig:
-      overwrite: false
-      fileName: "App/Api/Api{{ tag|class_name }}.ts"
-      forPathExpression:
-        key: tag
-        expression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
-
   App/BaseApi/BaseApi.ts.twig:
       #overwrite: false
       fileName: "App/BaseApi/BaseApi{{ tag|class_name }}.ts"
@@ -16,12 +9,29 @@ files:
         key: tag
         expression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
 
+  App/Api/Api.ts.twig:
+      overwrite: false
+      fileName: "App/Api/Api{{ tag|class_name }}.ts"
+      forPathExpression:
+        key: tag
+        expression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
+
+  App/Api/index.ts.twig:
+      fileName: "App/Api/index.ts"
+      with:
+          tags:
+              pathExpression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
+              unique: true
+
   App/BaseModel/model.ts.twig:
       fileName: "App/BaseModel/Base{{ definitionName|class_name }}.ts"
       for:
         key: definitionName
         value: schema
         in:  '[swagger].definitions'
+
+  App/BaseModel/ModelInterface.ts.twig:
+      fileName: "App/BaseModel/ModelInterface.ts"
 
   App/Model/model.ts.twig:
       overwrite: false
@@ -37,15 +47,14 @@ files:
   App/index.ts.twig:
       fileName: "App/index.ts"
 
-  App/BaseModel/ModelInterface.ts.twig:
-      fileName: "App/BaseModel/ModelInterface.ts"
-
-  App/Api/index.ts.twig:
-      fileName: "App/Api/index.ts"
+  App/apis.module.ts.twig:
+      fileName: "App/apis.module.ts"
       with:
           tags:
               pathExpression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
               unique: true
-      #overwrite: false
-  App/AppHttp.ts.twig: {}
-      #overwrite: false
+
+  App/app-http.service.ts.twig:
+      overwrite: false
+  App/event-dispatcher.service.ts.twig:
+      overwrite: false

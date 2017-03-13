@@ -24,6 +24,7 @@ draw_swagger_generator:
       json_decode: ~
       ucfirst: ~
       lcfirst: ~
+      ltrim: ~
     filters:
       to_array_recursive:
         type: chain

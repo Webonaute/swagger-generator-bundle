@@ -1,11 +1,10 @@
 {% autoescape false %}
 // Generated class BaseApi{{ tag|class_name }}
 {% import '@draw_swagger_generator/angular-api/macro.ts.twig' as macro %}
-import { AppHttp as BaseAppHttp } from '../AppHttp';
-import { Inject, Injectable, Optional, OpaqueToken } from '@angular/core';
-import { Http, Headers, URLSearchParams } from '@angular/http';
-import { RequestMethod, RequestOptions, RequestOptionsArgs } from '@angular/http';
-import { Response, ResponseContentType } from '@angular/http';
+// Generated class BaseApiUsers
+import { AppHttp } from '../app-http.service';
+import { Injector, Injectable } from '@angular/core';
+import { Headers, RequestOptionsArgs, Response, URLSearchParams } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
@@ -14,8 +13,13 @@ import * as models from '../Model';
 
 /* tslint:disable:no-unused-variable member-ordering */
 
-@Injectable()
-export class BaseApi{{ tag|class_name }} extends BaseAppHttp {
+export class BaseApi{{ tag|class_name }} {
+    public defaultHeaders: Headers = new Headers();
+    private appHttp: AppHttp;
+
+    constructor(protected injector: Injector) {
+        this.appHttp = this.injector.get(AppHttp);
+    }
 
 {% for path, pathItem in swagger.paths %}
 {% for method, operation in pathItem.getOperations() %}
@@ -41,9 +45,9 @@ export class BaseApi{{ tag|class_name }} extends BaseAppHttp {
             headers: headerParams,
             search: queryParameters
         };
-{% if method in ['post','put'] %}       requestOptions.body = JSON.stringify(body);{% endif %}{{ "" }}
+{% if method in ['post','put'] %}       requestOptions.body = body{% if getModelByOperation(operation, 'models.', '{}') != '{}' %}.serialize(){% endif %};{% endif %}{{ "" }}
 
-        return this.request(path, requestOptions)
+        return this.appHttp.request(path, requestOptions)
             .map((response: Response) => {
 {{ macro.handle_responses(operation) }}
             });

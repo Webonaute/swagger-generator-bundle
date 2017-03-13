@@ -1,0 +1,16 @@
+{% autoescape false %}
+import { NgModule } from '@angular/core';
+{% for tagsName in tags %}
+import { Api{{ tagsName|class_name }} } from './Api/Api{{ tagsName|class_name }}';
+{% endfor %}
+
+@NgModule({
+    providers: [
+{% for tagsName in tags %}
+        Api{{ tagsName|class_name }}{% if loop.last == false %},{% endif %}{{ "" }}
+{% endfor %}
+    ]
+})
+export class ApisModule {}
+
+{% endautoescape %}
