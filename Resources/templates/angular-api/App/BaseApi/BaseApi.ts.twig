@@ -31,7 +31,7 @@ export class BaseApi{{ tag|class_name }} {
      *{% if method in ['post','put'] %} @param body{% endif %}{{ "" }}
      * @param extraHttpRequestParams
      */
-    public {{ operation.operationId|camelize|camelizeDash|lcfirst }} ({{ macro.list_operation_params(operation.parameters, dsg.registry.ts.type_mapping) }}{% if method in ['post','put'] %}{{ "\n          " }}body?: {{ getModelByOperation(operation, 'models.', '{}') }},{% endif %}{{ "\n          " }}extraHttpRequestParams?: any ): Observable<{{ getModelByOperation(operation, 'models.', '{}') }}> {
+    public {{ operation.operationId|camelize|camelizeDash|lcfirst }} ({{ macro.list_operation_params(operation.parameters, dsg.registry.ts.type_mapping) }}{% if method in ['post','put'] %}{{ "\n          " }}body?: {{ getModelByOperation(operation, 'models.', '{}') }},{% endif %}{{ "\n          " }}extraHttpRequestParams?: any ): Observable<{{ getModelByOperation(operation, 'models.', '{}') }}{% if operation|schema_type_of_operation( dsg.registry.ts.type_mapping) == "array" %}[]{% endif %}> {
 
         {{ macro.create_path(path, operation.parameters, dsg.registry.ts.type_mapping) }}
 

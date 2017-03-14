@@ -35,4 +35,7 @@ const path = `{{ path|ltrim('/') }}`;
                 {{ macro.handle_return_hydratation(operation) }}
 {% endif %}
 {% endmacro %}
-{% macro handle_return_hydratation(operation) %}{% set model = getModelByOperation(operation, 'models.', '') %}{% if model == "" %}return response.json();{% else %}return new {{ model }}().hydrate(response.json());{% endif %}{% endmacro %}
+{% macro handle_return_hydratation(operation) %}
+{% set type = operation|schema_type_of_operation(dsg.registry.ts.type_mapping) %}
+{% set model = getModelByOperation(operation, 'models.', '') %}
+{% if model == "" %}return response.json();{% else %}{% if type == "array" %}return response.json().map({{ "\n                        " }}(item) => new {{ model }}().hydrate(item){{ "\n                    " }});{% else %}return new {{ model }}().hydrate(response.json());{% endif %}{% endif %}{% endmacro %}

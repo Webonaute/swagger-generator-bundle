@@ -76,6 +76,7 @@ class TwigExtension extends \Twig_Extension
         $filters[] = new Twig_SimpleFilter('path_key_map', array($this, 'pathKeyMap'), $options);
         $filters[] = new Twig_SimpleFilter('key_filter', array($this, 'keyFilter'), $options);
         $filters[] = new Twig_SimpleFilter('convert_type', array($this, 'convertType'), $options);
+        $filters[] = new Twig_SimpleFilter('schema_type_of_operation', array($this, 'getSchemaTypeOfOperation'), $options);
         $filters[] = new Twig_SimpleFilter(
             'extract_operation_parameters', array(
             $this,
@@ -125,6 +126,14 @@ class TwigExtension extends \Twig_Extension
      */
     public function isInstanceof($var, $instance) {
         return  $var instanceof $instance;
+    }
+
+    public function getSchemaTypeOfOperation(Operation $operation, $mapping){
+        if (isset($operation->responses[200])) {
+            $schema = $operation->responses[200]->schema;
+            return $this->convertType($schema, $mapping);
+        }
+        return "string";
     }
 
     public function getModelByOperation(Operation $operation, $prefix = '', $default = "")
