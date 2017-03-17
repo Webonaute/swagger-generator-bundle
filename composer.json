@@ -11,13 +11,13 @@
     },
     "require": {
         "php": ">=5.3.3",
-        "symfony/framework-bundle": "~2.3",
+        "symfony/framework-bundle": "~2.3|^3.2",
         "draw/swagger-bundle": "dev-master",
         "draw/draw-test-helper-bundle": "^1.0@dev"
     },
     "require-dev": {
-        "phpunit/phpunit": "4.1.*",
-        "symfony/symfony": "~2.3",
+        "phpunit/phpunit": "4.1.*|^6.0",
+        "symfony/symfony": "~2.3|^3.2",
         "polishsymfonycommunity/symfony-mocker-container": "~1.0",
         "jms/serializer-bundle": "@stable",
         "friendsofsymfony/rest-bundle": "1.4.*",
