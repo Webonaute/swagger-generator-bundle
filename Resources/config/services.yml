@@ -4,11 +4,11 @@ parameters:
 services:
   draw_swagger_generator:
     class: Draw\SwaggerGeneratorBundle\Generator\Generator
-    arguments: [@twig,%draw_swagger.template_dir%]
+    arguments: ['@twig','%draw_swagger.template_dir%']
 
   draw_swagger_generator.twig_extention:
     class: Draw\SwaggerGeneratorBundle\Generator\TwigExtension
-    arguments: [%draw_swagger_generator.twig_extension%]
+    arguments: ['%draw_swagger_generator.twig_extension%']
     tags:
       - { name: twig.extension }
 
@@ -17,7 +17,7 @@ services:
 
   json_schema.ref_resolver:
     class: JsonSchema\RefResolver
-    arguments: [@json_schema.uri_retriever]
+    arguments: ['@json_schema.uri_retriever']
 
   json_schema_validator:
     class: JsonSchema\Validator
