@@ -2,59 +2,59 @@ tags: ['language:typescript','framework:angular']
 files:
   #README.md.twig: {}
 
-  App/BaseApi/BaseApi.ts.twig:
+  backend/base-api/base-api.ts.twig:
       #overwrite: false
-      fileName: "App/BaseApi/BaseApi{{ tag|class_name }}.ts"
+      fileName: "backend/base-api/base-api-{{ tag|class_name }}.ts"
       forPathExpression:
         key: tag
         expression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
 
-  App/Api/Api.ts.twig:
+  backend/api/api.ts.twig:
       overwrite: false
-      fileName: "App/Api/Api{{ tag|class_name }}.ts"
+      fileName: "backend/api/api-{{ tag|class_name }}.ts"
       forPathExpression:
         key: tag
         expression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
 
-  App/Api/index.ts.twig:
-      fileName: "App/Api/index.ts"
+  backend/api/index.ts.twig:
+      fileName: "backend/api/index.ts"
       with:
           tags:
               pathExpression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
               unique: true
 
-  App/BaseModel/model.ts.twig:
-      fileName: "App/BaseModel/Base{{ definitionName|class_name }}.ts"
+  backend/base-model/model.ts.twig:
+      fileName: "backend/base-model/base-{{ definitionName|class_name }}.ts"
       for:
         key: definitionName
         value: schema
         in:  '[swagger].definitions'
 
-  App/BaseModel/ModelInterface.ts.twig:
-      fileName: "App/BaseModel/ModelInterface.ts"
+  backend/base-model/model-interface.ts.twig:
+      fileName: "backend/base-model/model-interface.ts"
 
-  App/Model/model.ts.twig:
+  backend/model/model.ts.twig:
       overwrite: false
-      fileName: "App/Model/{{ definitionName|class_name }}.ts"
+      fileName: "backend/model/{{ definitionName|class_name }}.ts"
       for:
         key: definitionName
         value: schema
         in:  '[swagger].definitions'
 
-  App/Model/index.ts.twig:
-      fileName: "App/Model/index.ts"
+  backend/model/index.ts.twig:
+      fileName: "backend/model/index.ts"
 
-  App/index.ts.twig:
-      fileName: "App/index.ts"
+  backend/index.ts.twig:
+      fileName: "backend/index.ts"
 
-  App/apis.module.ts.twig:
-      fileName: "App/apis.module.ts"
+  backend/apis.module.ts.twig:
+      fileName: "backend/apis.module.ts"
       with:
           tags:
               pathExpression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
               unique: true
 
-  App/app-http.service.ts.twig:
+  backend/app-http.service.ts.twig:
       overwrite: false
-  App/event-dispatcher.service.ts.twig:
+  backend/event-dispatcher.service.ts.twig:
       overwrite: false
