@@ -14,7 +14,7 @@ use Twig_SimpleFilter;
 /**
  * @author Martin Poirier Theoret <mpoiriert@gmail.com>
  */
-class TwigExtension extends \Twig_Extension
+class TwigExtension extends \Twig_Extension implements \Twig_Extension_InitRuntimeInterface, \Twig_Extension_GlobalsInterface
 {
     /**
      * @var Twig_Environment
@@ -50,8 +50,7 @@ class TwigExtension extends \Twig_Extension
     public function initRuntime(Twig_Environment $environment)
     {
         $this->environment = $environment;
-        $this->environment->getExtension('escaper')->setDefaultStrategy(false);
-        parent::initRuntime($environment);
+        $this->environment->getExtension('Twig_Extension_Escaper')->setDefaultStrategy(false);
     }
 
     public function getGlobals()

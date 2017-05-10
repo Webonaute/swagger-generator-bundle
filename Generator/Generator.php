@@ -129,9 +129,10 @@ class Generator
         }
 
         if (isset($fileConfiguration['fileName'])) {
+
             $currentLoader = $this->twig->getLoader();
-            $this->twig->setLoader(new \Twig_Loader_String());
-            $fileName = $this->twig->render($fileConfiguration['fileName'], $context);
+            $this->twig->setLoader(new \Twig_Loader_Array(['filename' => $fileConfiguration['fileName']]));
+            $fileName = $this->twig->render('filename', $context);
             $this->twig->setLoader($currentLoader);
             return $fileName;
         }
@@ -234,6 +235,6 @@ class Generator
             throw new \RuntimeException('Template [' . $template . '] does not exists');
         }
 
-        return Yaml::parse($file);
+        return Yaml::parse(file_get_contents($file));
     }
 }

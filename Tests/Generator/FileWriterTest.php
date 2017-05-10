@@ -3,11 +3,12 @@
 namespace Draw\SwaggerGeneratorBundle\Tests\Generator;
 
 use Draw\SwaggerGeneratorBundle\Generator\FileWriter;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author Martin Poirier Theoret <mpoiriert@gmail.com>
  */
-class FileWriterTest extends \PHPUnit_Framework_TestCase
+class FileWriterTest extends TestCase
 {
     public function provideWrite()
     {
