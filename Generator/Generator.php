@@ -99,6 +99,7 @@ class Generator
                 foreach ($values as $_key => $_value) {
                     $context[$key] = $_key;
                     $context[$value] = $_value;
+                    $this->output->writeln("Render file : $path.$fileName");
                     $this->renderToFile($path, $template, $fileName, $context, $fileConfiguration);
                 }
             }elseif(isset($fileConfiguration['forPathExpression'])){
@@ -114,9 +115,11 @@ class Generator
                 foreach ($expressionResults as $expressionResult) {
                     $context[$key] = $expressionResult;
                     //$context[$value] = $_value;
+                    $this->output->writeln("Render file : $path.$fileName");
                     $this->renderToFile($path, $template, $fileName, $context, $fileConfiguration);
                 }
             }else{
+                $this->output->writeln("Render file : $path.$fileName");
                 $this->renderToFile($path, $template, $fileName, $context, $fileConfiguration);
             }
         }

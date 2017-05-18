@@ -1,4 +1,4 @@
 // Generated
 {% for definitionName, definitionItem in swagger.definitions %}
-export * from './{{ definitionName|class_name }}';
+export * from './{{ definitionName|class_filename }}';
 {% endfor %}

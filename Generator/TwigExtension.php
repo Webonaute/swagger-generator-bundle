@@ -75,6 +75,7 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_InitRunti
         $filters[] = new Twig_SimpleFilter('path_key_map', array($this, 'pathKeyMap'), $options);
         $filters[] = new Twig_SimpleFilter('key_filter', array($this, 'keyFilter'), $options);
         $filters[] = new Twig_SimpleFilter('convert_type', array($this, 'convertType'), $options);
+        $filters[] = new Twig_SimpleFilter('class_filename', array($this, 'getClassFilename'), $options);
         $filters[] = new Twig_SimpleFilter('schema_type_of_operation', array($this, 'getSchemaTypeOfOperation'), $options);
         $filters[] = new Twig_SimpleFilter(
             'extract_operation_parameters', array(
@@ -277,6 +278,22 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_InitRunti
         }
 
         return $type;
+    }
+
+    /**
+     * @param $str
+     *
+     * @return string
+     */
+    public function getClassFilename($str)
+    {
+        $str = call_user_func($this->environment->getFilter('class_name')->getCallable(), $str);
+
+        $str = preg_replace('/(?<!\ )[A-Z]/','-$0', $str);
+        $str = strtolower($str);
+        $str = trim($str, "-");
+
+        return $str;
     }
 
     public function isClass($type, array $mapping)

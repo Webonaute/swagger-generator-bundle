@@ -4,14 +4,14 @@ files:
 
   backend/base-api/base-api.ts.twig:
       #overwrite: false
-      fileName: "backend/base-api/base-api-{{ tag|class_name }}.ts"
+      fileName: "backend/base-api/base-api-{{ tag|class_filename }}.ts"
       forPathExpression:
         key: tag
         expression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
 
   backend/api/api.ts.twig:
       overwrite: false
-      fileName: "backend/api/api-{{ tag|class_name }}.ts"
+      fileName: "backend/api/api-{{ tag|class_filename }}.ts"
       forPathExpression:
         key: tag
         expression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
@@ -24,7 +24,7 @@ files:
               unique: true
 
   backend/base-model/model.ts.twig:
-      fileName: "backend/base-model/base-{{ definitionName|class_name }}.ts"
+      fileName: "backend/base-model/base-{{ definitionName|class_filename }}.ts"
       for:
         key: definitionName
         value: schema
@@ -35,7 +35,7 @@ files:
 
   backend/model/model.ts.twig:
       overwrite: false
-      fileName: "backend/model/{{ definitionName|class_name }}.ts"
+      fileName: "backend/model/{{ definitionName|class_filename }}.ts"
       for:
         key: definitionName
         value: schema

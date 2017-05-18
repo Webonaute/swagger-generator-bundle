@@ -59,6 +59,13 @@ draw_swagger_generator:
             - { filterName: trim, arguments: [] }
             - { filterName: replace, arguments: [{'#/definitions/':'','\':"_",".":"_","/":"_","-":"_"}] }
             - { filterName: camelize, arguments: [] }
+      #class_filename:
+      #  type: chain
+      #  parameters:
+      #    chain:
+      #      - { filterName: class_name, arguments: [] }
+      #      - { filterName: preg_replace, arguments: [{'/(?<!\ )[A-Z]/':'-$0'}] }
+      #      - { filterName: lower, arguments: [] }
       paths_classes:
         type: chain
         parameters:
