@@ -3,7 +3,7 @@
 {% import '@draw_swagger_generator/angular-api/macro.ts.twig' as macro %}
 // Generated class BaseApiUsers
 import { AppHttp } from '../app-http.service';
-import { Injector, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Headers, RequestOptionsArgs, Response, URLSearchParams } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
@@ -15,10 +15,8 @@ import * as models from '../model';
 
 export class BaseApi{{ tag|class_name }} {
     public defaultHeaders: Headers = new Headers();
-    private appHttp: AppHttp;
 
-    constructor(protected injector: Injector) {
-        this.appHttp = this.injector.get(AppHttp);
+    constructor(public appHttp: AppHttp) {
     }
 
 {% for path, pathItem in swagger.paths %}
