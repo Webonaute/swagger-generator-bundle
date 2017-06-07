@@ -2,7 +2,7 @@
 // Generated class BaseApi{{ tag|class_name }}
 {% import '@draw_swagger_generator/angular-api/macro.ts.twig' as macro %}
 // Generated class BaseApiUsers
-import { AppHttp } from '../app-http.service';
+import { BaseHttp } from '../base-http.service';
 import { Injectable } from '@angular/core';
 import { Headers, RequestOptionsArgs, Response, URLSearchParams } from '@angular/http';
 
@@ -16,7 +16,7 @@ import * as models from '../model';
 export class BaseApi{{ tag|class_name }} {
     public defaultHeaders: Headers = new Headers();
 
-    constructor(public appHttp: AppHttp) {
+    constructor(public baseHttp: BaseHttp) {
     }
 
 {% for path, pathItem in swagger.paths %}
@@ -45,7 +45,7 @@ export class BaseApi{{ tag|class_name }} {
         };
 {% if method in ['post','put'] %}       requestOptions.body = body{% if getModelByOperation(operation, 'models.', '{}') != '{}' %}.serialize(){% endif %};{% endif %}{{ "" }}
 
-        return this.appHttp.request(path, requestOptions)
+        return this.baseHttp.request(path, requestOptions)
             .map((response: Response) => {
 {{ macro.handle_responses(operation) }}
             });

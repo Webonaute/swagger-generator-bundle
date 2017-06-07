@@ -3,7 +3,7 @@ import { AuthHttp, AuthConfig } from 'angular2-jwt';
 import { RequestOptions, Http } from '@angular/http';
 
 @Injectable()
-export class AppHttp extends AuthHttp {
+export class BaseHttp extends AuthHttp {
 
     constructor(options: AuthConfig,
                 http: Http,
