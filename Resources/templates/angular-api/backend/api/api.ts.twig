@@ -1,7 +1,7 @@
 {% autoescape false %}
 // Generated class Api{{ tag|class_name }}
 import { Inject, Injectable, Optional, OpaqueToken } from '@angular/core';
-import { BaseHttp } from '../base-http.service';
+import { AppHttp } from '../app-http.service';
 import { BaseApi{{ tag|class_name }} } from '../base-api/base-api-{{ tag|class_filename }}';
 
 /* tslint:disable:no-unused-variable member-ordering */
@@ -9,8 +9,8 @@ import { BaseApi{{ tag|class_name }} } from '../base-api/base-api-{{ tag|class_f
 @Injectable()
 export class Api{{ tag|class_name }} extends BaseApi{{ tag|class_name }} {
 
-  constructor(public baseHttp: BaseHttp) {
-      super(baseHttp);
+  constructor(public appHttp: AppHttp) {
+      super(appHttp);
   }
 }
 

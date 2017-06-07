@@ -54,5 +54,5 @@ files:
               pathExpression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
               unique: true
 
-  backend/base-http.service.ts.twig:
+  backend/app-http.service.ts.twig:
       overwrite: true
