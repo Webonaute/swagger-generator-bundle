@@ -1,44 +1,17 @@
 import { Injectable, Inject } from '@angular/core';
 import { AuthHttp, AuthConfig } from 'angular2-jwt';
-import { RequestOptionsArgs, Request, Response, RequestOptions, Http, Headers } from '@angular/http';
-import { Observable } from 'rxjs/Rx';
+import { RequestOptions, Http } from '@angular/http';
 
 @Injectable()
 export class AppHttp extends AuthHttp {
-    protected basePath = 'https://localhost';
-    public defaultHeaders: Headers = new Headers();
 
-    constructor(options: AuthConfig,
-                http: Http,
-                defOpts?: RequestOptions,
-                @Inject('API_URL') private apiUrl?: string) {
+    constructor(
+        options: AuthConfig,
+        http: Http,
+        defOpts?: RequestOptions,
+        @Inject('apiUrl') apiUrl?: string,
+        @Inject('localeService') localeService?: any
+    ) {
         super(options, http, defOpts);
-
-        if (apiUrl) {
-            this.basePath = apiUrl;
-        }
-    }
-
-    // @see https://github.com/angular/angular/issues/10612
-    request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
-        if (typeof url === 'string') {
-            return this.get(url, options); // Recursion: transform url from String to Request
-        }
-
-        const req: Request = <Request>url;
-        if (req.getBody()) {
-            req.headers.append('Content-Type', 'application/json');
-        }
-        req.headers.append('Accept', 'application/json');
-
-        if (!req.url.startsWith('http') && !req.url.startsWith('/') && this.apiUrl) {
-            req.url = this.apiUrl + req.url;
-        }
-
-        return super.request(url, options).catch(
-                (response: Response) => {
-                    return Observable.throw(response);
-                }
-        );
     }
 }
