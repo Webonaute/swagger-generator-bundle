@@ -5,10 +5,13 @@ import { RequestOptions, Http } from '@angular/http';
 @Injectable()
 export class AppHttp extends AuthHttp {
 
-    constructor(options: AuthConfig,
-                http: Http,
-                defOpts?: RequestOptions,
-                apiUrl?: string) {
+    constructor(
+        options: AuthConfig,
+        http: Http,
+        defOpts?: RequestOptions,
+        @Inject('apiUrl') apiUrl?: string,
+        @Inject('localeService') localeService?: any
+    ) {
         super(options, http, defOpts);
     }
 }
