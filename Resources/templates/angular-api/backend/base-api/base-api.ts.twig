@@ -36,6 +36,11 @@ export class BaseApi{{ tag|class_name }} {
         const queryParameters = new URLSearchParams();
         const headerParams = this.defaultHeaders;
 
+        if (extraHttpRequestParams) {
+           for (let key in extraHttpRequestParams) {
+             queryParameters.set(key, extraHttpRequestParams[key]);
+           }
+        }
 {{ macro.operation_params_require(operation.parameters, dsg.registry.ts.type_mapping, operation) }}
 
         const requestOptions: RequestOptionsArgs = {
