@@ -50,7 +50,7 @@ export class BaseApi{{ tag|class_name }} {
         };
 {% if method in ['post','put'] %}       requestOptions.body = body{% if getModelByOperation(operation, 'models.', '{}') != '{}' %}.serialize(){% endif %};{% endif %}{{ "" }}
 
-        return this.appHttp.request(path, requestOptions)
+        return this.appHttp.request(routePath, requestOptions)
             .map((response: Response) => {
 {{ macro.handle_responses(operation) }}
             });
