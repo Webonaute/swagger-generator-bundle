@@ -2,8 +2,13 @@
 // Generated class Base{{ definitionName|class_name }}
 {% include [current_directory ~ "/_imports.twig"] %}
 export abstract class Base{{ definitionName|class_name }} implements ModelInterface {
-{% for propertyName, property in schema.properties %}
-{% set type = property|convert_type(dsg.registry.ts.type_mapping) %}
+{% for propertyName, property in schema.properties -%}
+    {% set type = property|convert_type(dsg.registry.ts.type_mapping) %}
+    // Groups(
+    {%- for serializerGroup in property.serializerGroups -%}
+        {"{{ serializerGroup }}"}{% if loop.revindex != 1 %},{% endif -%}
+    {%- endfor -%}
+    )
     private _{{ propertyName }}: {% if type != "array" %}{{ type }}{% else %}{{ property.items|convert_type(dsg.registry.ts.type_mapping) }}[]{% endif %} = null;
 {% endfor %}
 

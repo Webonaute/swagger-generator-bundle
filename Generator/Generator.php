@@ -187,7 +187,7 @@ class Generator
             return;
         }
 
-        $this->fileWriter->writeFile($fileContent, $outputFilePath, $overwrite, $strategy);
+        $this->fileWriter->writeFile($fileContent, $outputFilePath, $strategy, $overwrite);
 
     }
 
