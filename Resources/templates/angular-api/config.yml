@@ -7,20 +7,20 @@ files:
       fileName: "backend/base-api/base-api-{{ tag|class_filename }}.ts"
       forPathExpression:
         key: tag
-        expression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
+        expression: '[swagger.paths.*.get.tags[0], swagger.paths.*.put.tags[0], swagger.paths.*.delete.tags[0], swagger.paths.*.post.tags[0]]'
 
   backend/api/api.ts.twig:
       overwrite: false
       fileName: "backend/api/api-{{ tag|class_filename }}.ts"
       forPathExpression:
         key: tag
-        expression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
+        expression: '[swagger.paths.*.get.tags[0], swagger.paths.*.put.tags[0], swagger.paths.*.delete.tags[0], swagger.paths.*.post.tags[0]]'
 
   backend/api/index.ts.twig:
       fileName: "backend/api/index.ts"
       with:
           tags:
-              pathExpression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
+              pathExpression: '[swagger.paths.*.get.tags[0], swagger.paths.*.put.tags[0], swagger.paths.*.delete.tags[0], swagger.paths.*.post.tags[0]]'
               unique: true
 
   backend/base-model/model.ts.twig:
@@ -51,7 +51,7 @@ files:
       fileName: "backend/apis.module.ts"
       with:
           tags:
-              pathExpression: swagger.paths.*.get.tags[0] || swagger.paths.*.put.tags[0] || swagger.paths.*.delete.tags[0] || swagger.paths.*.post.tags[0]
+              pathExpression: '[swagger.paths.*.get.tags[0], swagger.paths.*.put.tags[0], swagger.paths.*.delete.tags[0], swagger.paths.*.post.tags[0]]'
               unique: true
 
   backend/app-http.service.ts.twig:

@@ -77,7 +77,8 @@ class Generator
             if (isset($fileConfiguration['with'])) {
                 foreach ($fileConfiguration['with'] as $key => $configuration) {
                     if (isset($configuration['pathExpression'])){
-                        $expressionResults = \JmesPath\Env::search($configuration['pathExpression'],$context);
+                        $allExpressionResults = \JmesPath\Env::search($configuration['pathExpression'],$context);
+                        $expressionResults = $this->mergeExpressionResults($allExpressionResults);
                         if (isset($configuration['unique']) && $configuration['unique'] === true && is_array($expressionResults)) {
                             $expressionResults = array_unique($expressionResults);
                         }
@@ -107,7 +108,9 @@ class Generator
                 $key = $for['key'];
                 //$value = $for['value'];
 
-                $expressionResults = \JmesPath\Env::search($for['expression'],$context);
+                $allExpressionResults = \JmesPath\Env::search($for['expression'],$context);
+                $expressionResults = $this->mergeExpressionResults($allExpressionResults);
+
                 if (!is_array($expressionResults) || empty($expressionResults)){
                     throw new \Exception("Expression \"$for\" returned empty result.");
                 }
@@ -123,6 +126,15 @@ class Generator
                 $this->renderToFile($path, $template, $fileName, $context, $fileConfiguration);
             }
         }
+    }
+
+    private function mergeExpressionResults($allExpressionResults)
+    {
+        $expressionResults = [];
+        foreach ($allExpressionResults as $results) {
+            $expressionResults = array_merge($expressionResults, $results);
+        }
+        return $expressionResults;
     }
 
     private function getFileName($context, $realFileName, $fileConfiguration, $currentResult)
