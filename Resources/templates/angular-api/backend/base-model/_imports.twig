@@ -1,4 +1,7 @@
 import { ModelInterface } from './model-interface';
+{% if schema.parentAlias  is not null -%}
+import { Base{{ schema.parentAlias|class_name }} } from './base-{{ schema.parentAlias|class_filename }}';
+{% endif %}
 {% set typeNames = [] %}
 {% for propertyName, property in schema.properties %}
 {% set type = property|convert_type(dsg.registry.ts.type_mapping) %}

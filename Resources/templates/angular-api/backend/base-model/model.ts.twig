@@ -1,7 +1,7 @@
 {% autoescape false %}
 // Generated class Base{{ definitionName|class_name }}
 {% include [current_directory ~ "/_imports.twig"] %}
-export abstract class Base{{ definitionName|class_name }} implements ModelInterface {
+export abstract class Base{{ definitionName|class_name }}{% if schema.parentAlias is not null %} extends Base{{ schema.parentAlias|class_name }}{% endif %} implements ModelInterface {
 {% for propertyName, property in schema.properties -%}
     {% set type = property|convert_type(dsg.registry.ts.type_mapping) %}
     // Groups(
