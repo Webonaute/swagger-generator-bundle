@@ -1,5 +1,5 @@
 import { ModelInterface } from './model-interface';
-{% if schema.parentAlias  is not null -%}
+{% if schema.parentAlias is not null -%}
 import { Base{{ schema.parentAlias|class_name }} } from './base-{{ schema.parentAlias|class_filename }}';
 {% endif %}
 {% set typeNames = [] %}
