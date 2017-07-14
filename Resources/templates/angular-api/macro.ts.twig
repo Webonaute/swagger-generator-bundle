@@ -26,7 +26,7 @@ const routePath = `{{ path|ltrim('/') }}`;
 {% import _self as macro %}{% if operation.responses|length > 0 %}
 {% for responseCode, response in operation.responses %}
                 {% if loop.first %}if (response.status === {{ responseCode }}) {{ "{\n" }}{% else %}{{ "}" }} else if (response.status === {{ responseCode }}) {{ "{" }}{% endif %}{{ "" }}
-                    {% if responseCode == "200" %}{{ macro.handle_return_hydratation(operation) }}{% elseif responseCode == "204" %}return undefined;{% else %}return response.json();{% endif %}{{ "" }}
+                    {% if responseCode == "204" %}return { success: true };{% elseif responseCode < "300" %}{{ macro.handle_return_hydratation(operation) }}{% else %}return response.json();{% endif %}{{ "" }}
 {% endfor %}
                 }
 {% else %}

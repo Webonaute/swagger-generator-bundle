@@ -136,14 +136,26 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_InitRunti
         return "string";
     }
 
-    public function getModelByOperation(Operation $operation, $prefix = '', $default = "")
+    public function getModelByOperation(Operation $operation, $prefix = '', $default = "", $responseCode = null)
     {
         $ret = $default;
         $model = null;
 
+        $responses = array_keys($operation->responses);
+        $successResponses = array_filter($responses, function ($code) { return $code < 300 ? true : false; });
+
+        if ($responseCode === null) {
+            if (isset($successResponses[0])) {
+                $responseCode = $successResponses[0];
+            } else {
+                $responseCode = 200;
+            }
+        }
+        $responseCode = (int)$responseCode;
+
         /** @var Schema $param */
-        if (isset($operation->responses[200])) {
-            $schema = $operation->responses[200]->schema;
+        if (isset($operation->responses[$responseCode])) {
+            $schema = $operation->responses[$responseCode]->schema;
             if ($schema->ref === null) {
                 if (isset($schema->items->ref)) {
                     $model = $schema->items->ref;
