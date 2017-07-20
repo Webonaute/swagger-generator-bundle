@@ -10,7 +10,44 @@
 const routePath = `{{ path|ltrim('/') }}`;
 {% endmacro %}
 
-{% macro list_operation_params(operationParameters, type_mapping) %}{% set params = "" %}{% for parameter in operationParameters %}{% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}{% set params = params ~ "\n           " ~ parameter.name ~ ": " ~ parameter|convert_type(type_mapping) ~ ","  %}{% endif %}{% endfor %}{{ params }}{% endmacro %}
+
+{% macro list_operation_params(operationParameters, type_mapping) %}
+{% for parameter in operationParameters %}
+{% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}
+{{ "\n        " ~ parameter.name ~ ": " ~ parameter|convert_type(type_mapping) ~ "," }}{% endif %}
+{% endfor %}
+{% endmacro %}
+
+
+{% macro list_body_params(operationParameters, type_mapping) %}
+{% for parameter in operationParameters %}
+{% if parameter is instanceof("Draw\\Swagger\\Schema\\BodyParameter") %}
+{# if parameter is mapped to an entity (and we use converter="fos_rest.request_body"), body should contain a model#}
+{% if parameter.schema.properties is null and (parameter.schema.ref is not null or (parameter.schema.items.ref is defined and not null)) %}
+    {{- getModelFromParameter(parameter, 'models.', '{}') -}}
+{%- else -%} {# if request parameters are mapped to simple arguments, we create a simple object with those params #}
+{
+    {%- for propertyName, property in parameter.schema.properties -%}
+            {{- propertyName ~ ": " ~ property|convert_type(type_mapping) }}{% if loop.revindex != 1 %}, {% endif -%}
+    {%- endfor -%}
+}
+{%- endif %}
+{% endif %}
+{% endfor %}
+{% endmacro %}
+
+
+{% macro is_body_serializable(operationParameters) %}
+{% for parameter in operationParameters %}
+{% if parameter is instanceof("Draw\\Swagger\\Schema\\BodyParameter") %}
+{% if parameter.schema.properties is null and (parameter.schema.ref is not null or (parameter.schema.items.ref is defined and not null)) %}
+{{ getModelFromParameter(parameter, 'models.', '{}') -}}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endmacro %}
+
+
 {% macro list_operation_params_doc(operationParameters, type_mapping) %}{% set params = "" %}{% for parameter in operationParameters %}{% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}{% set params = params ~ "\n     * @param " ~ parameter.name ~ ""  %}{% endif %}{% endfor %}{{ params }}{% endmacro %}
 {% macro operation_params_require(operationParameters, type_mapping, operation) %}
 {% set params = "" %}
@@ -33,6 +70,8 @@ const routePath = `{{ path|ltrim('/') }}`;
                 {{ macro.handle_return_hydratation(operation) }}
 {% endif %}
 {% endmacro %}
+
+
 {% macro handle_return_hydratation(operation) %}
 {% set type = operation|schema_type_of_operation(dsg.registry.ts.type_mapping) %}
 {% set model = getModelByOperation(operation, 'models.', '') %}

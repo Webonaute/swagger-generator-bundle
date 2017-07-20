@@ -29,7 +29,13 @@ export class BaseApi{{ tag|class_name }} {
      *{% if method in ['post','put'] %} @param body{% endif %}{{ "" }}
      * @param extraHttpRequestParams
      */
-    public {{ operation.operationId|camelize|camelizeDash|lcfirst }} ({{ macro.list_operation_params(operation.parameters, dsg.registry.ts.type_mapping) }}{% if method in ['post','put'] %}{{ "\n          " }}body?: {{ getModelByOperation(operation, 'models.', '{}') }},{% endif %}{{ "\n          " }}extraHttpRequestParams?: any ): Observable<{{ getModelByOperation(operation, 'models.', '{}') }}{% if operation|schema_type_of_operation( dsg.registry.ts.type_mapping) == "array" %}[]{% endif %}> {
+    public {{ operation.operationId|camelize|camelizeDash|lcfirst }} (
+        {{- macro.list_operation_params(operation.parameters, dsg.registry.ts.type_mapping) }}
+        {% if method in ['post','put'] -%}
+        body?: {{ macro.list_body_params(operation.parameters, dsg.registry.ts.type_mapping) }},
+        {% endif -%}
+        extraHttpRequestParams?: any
+    ): Observable<{{ getModelByOperation(operation, 'models.', '{}') }}{% if operation|schema_type_of_operation( dsg.registry.ts.type_mapping) == "array" %}[]{% endif %}> {
 
         {{ macro.create_path(path, operation.parameters, dsg.registry.ts.type_mapping) }}
 
@@ -48,7 +54,9 @@ export class BaseApi{{ tag|class_name }} {
             headers: headerParams,
             search: queryParameters
         };
-{% if method in ['post','put'] %}       requestOptions.body = body{% if getModelByOperation(operation, 'models.', '{}') != '{}' %}.serialize(){% endif %};{% endif %}{{ "" }}
+{% if method in ['post','put'] %}
+        requestOptions.body = body{% if macro.is_body_serializable(operation.parameters) != "" %}.serialize(){% endif %};
+{% endif %}
 
         return this.appHttp.request(routePath, requestOptions)
             .map((response: Response) => {

@@ -37,6 +37,7 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_InitRunti
     {
         $methods = [];
         $methods[] = new \Twig_SimpleFunction("getModelByOperation", [$this, 'getModelByOperation']);
+        $methods[] = new \Twig_SimpleFunction("getModelFromParameter", [$this, 'getModelFromParameter']);
         return $methods;
     }
 
@@ -167,6 +168,27 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_InitRunti
             if ($model !== null) {
                 $ret = $prefix.str_replace('#/definitions/', '', $model);
             }
+        }
+
+        return $ret;
+    }
+
+    public function getModelFromParameter(BodyParameter $parameter, $prefix = '', $default = "", $responseCode = null)
+    {
+        $ret = $default;
+        $model = null;
+
+        $schema = $parameter->schema;
+        if ($schema->ref === null) {
+            if (isset($schema->items->ref)) {
+                $model = $schema->items->ref;
+            }
+        } else {
+            $model = $schema->ref;
+        }
+
+        if ($model !== null) {
+            $ret = $prefix . str_replace('#/definitions/', '', $model);
         }
 
         return $ret;
