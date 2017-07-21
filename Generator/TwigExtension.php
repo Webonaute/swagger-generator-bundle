@@ -38,6 +38,7 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_InitRunti
         $methods = [];
         $methods[] = new \Twig_SimpleFunction("getModelByOperation", [$this, 'getModelByOperation']);
         $methods[] = new \Twig_SimpleFunction("getModelFromParameter", [$this, 'getModelFromParameter']);
+        $methods[] = new \Twig_SimpleFunction("hasBodyParams", [$this, 'hasBodyParams']);
         return $methods;
     }
 
@@ -127,6 +128,21 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_InitRunti
      */
     public function isInstanceof($var, $instance) {
         return  $var instanceof $instance;
+    }
+
+    /**
+     * @param Operation $operation
+     *
+     * @return boolean
+     */
+    public function hasBodyParams(Operation $operation)
+    {
+        foreach ($operation->parameters as $parameter) {
+            if ($parameter instanceof BodyParameter) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function getSchemaTypeOfOperation(Operation $operation, $mapping){

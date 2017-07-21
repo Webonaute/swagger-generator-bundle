@@ -24,14 +24,13 @@ export class BaseApi{{ tag|class_name }} {
 {% if tag in operation.tags %}
 {% set operationParameter = operation|extract_operation_parameters(dsg.registry.ts.type_mapping) %}
     /**
-     *
      *{{ macro.list_operation_params_doc(operation.parameters, dsg.registry.ts.type_mapping) }}
-     *{% if method in ['post','put'] %} @param body{% endif %}{{ "" }}
+     {%- if hasBodyParams(operation) == true %}{{ "\n     * @param body" }}{% endif %}{{ "" }}
      * @param extraHttpRequestParams
      */
     public {{ operation.operationId|camelize|camelizeDash|lcfirst }} (
         {{- macro.list_operation_params(operation.parameters, dsg.registry.ts.type_mapping) }}
-        {% if method in ['post','put'] -%}
+        {% if hasBodyParams(operation) == true -%}
         body?: {{ macro.list_body_params(operation.parameters, dsg.registry.ts.type_mapping) }},
         {% endif -%}
         extraHttpRequestParams?: any
@@ -54,7 +53,7 @@ export class BaseApi{{ tag|class_name }} {
             headers: headerParams,
             search: queryParameters
         };
-{% if method in ['post','put'] %}
+{% if hasBodyParams(operation) == true %}
         requestOptions.body = body{% if macro.is_body_serializable(operation.parameters) != "" %}.serialize(){% endif %};
 {% endif %}
 

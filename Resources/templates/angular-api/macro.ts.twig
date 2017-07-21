@@ -28,7 +28,14 @@ const routePath = `{{ path|ltrim('/') }}`;
 {%- else -%} {# if request parameters are mapped to simple arguments, we create a simple object with those params #}
 {
     {%- for propertyName, property in parameter.schema.properties -%}
-            {{- propertyName ~ ": " ~ property|convert_type(type_mapping) }}{% if loop.revindex != 1 %}, {% endif -%}
+        {%- set type = property|convert_type(type_mapping) -%}
+        {{ propertyName ~ ": " }}
+        {%- if type != "array" -%}
+            {{ type }}
+        {%- else -%}
+            {{ property.items|convert_type(type_mapping) ~ "[]" }}
+        {%- endif -%}
+        {%- if loop.revindex != 1 %}, {% endif -%}
     {%- endfor -%}
 }
 {%- endif %}
@@ -48,7 +55,16 @@ const routePath = `{{ path|ltrim('/') }}`;
 {% endmacro %}
 
 
-{% macro list_operation_params_doc(operationParameters, type_mapping) %}{% set params = "" %}{% for parameter in operationParameters %}{% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}{% set params = params ~ "\n     * @param " ~ parameter.name ~ ""  %}{% endif %}{% endfor %}{{ params }}{% endmacro %}
+{% macro list_operation_params_doc(operationParameters, type_mapping) %}
+{% set params = "" %}
+{% for parameter in operationParameters %}
+{% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}
+{{ "\n     * @param " ~ parameter.name -}}
+{% endif %}
+{% endfor %}
+{% endmacro %}
+
+
 {% macro operation_params_require(operationParameters, type_mapping, operation) %}
 {% set params = "" %}
 {% for parameter in operationParameters %}
