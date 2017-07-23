@@ -39,6 +39,8 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_InitRunti
         $methods[] = new \Twig_SimpleFunction("getModelByOperation", [$this, 'getModelByOperation']);
         $methods[] = new \Twig_SimpleFunction("getModelFromParameter", [$this, 'getModelFromParameter']);
         $methods[] = new \Twig_SimpleFunction("hasBodyParams", [$this, 'hasBodyParams']);
+        $methods[] = new \Twig_SimpleFunction("hasPathParams", [$this, 'hasPathParams']);
+        $methods[] = new \Twig_SimpleFunction("hasQueryParams", [$this, 'hasQueryParams']);
         return $methods;
     }
 
@@ -139,6 +141,36 @@ class TwigExtension extends \Twig_Extension implements \Twig_Extension_InitRunti
     {
         foreach ($operation->parameters as $parameter) {
             if ($parameter instanceof BodyParameter) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param Operation $operation
+     *
+     * @return boolean
+     */
+    public function hasPathParams(Operation $operation)
+    {
+        foreach ($operation->parameters as $parameter) {
+            if ($parameter instanceof PathParameter) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param Operation $operation
+     *
+     * @return boolean
+     */
+    public function hasQueryParams(Operation $operation)
+    {
+        foreach ($operation->parameters as $parameter) {
+            if ($parameter instanceof QueryParameter) {
                 return true;
             }
         }

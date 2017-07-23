@@ -27,13 +27,15 @@ export class BaseApi{{ tag|class_name }} {
      *{{ macro.list_operation_params_doc(operation.parameters, dsg.registry.ts.type_mapping) }}
      {%- if hasBodyParams(operation) == true %}{{ "\n     * @param body" }}{% endif %}{{ "" }}
      * @param extraHttpRequestParams
+     {%- if hasQueryParams(operation) == true %}{{ macro.list_query_params_doc(operation.parameters, dsg.registry.ts.type_mapping) }}{% endif %}{{ "" }}
      */
     public {{ operation.operationId|camelize|camelizeDash|lcfirst }} (
         {{- macro.list_operation_params(operation.parameters, dsg.registry.ts.type_mapping) }}
         {% if hasBodyParams(operation) == true -%}
         body?: {{ macro.list_body_params(operation.parameters, dsg.registry.ts.type_mapping) }},
         {% endif -%}
-        extraHttpRequestParams?: any
+        extraHttpRequestParams?: any,
+        {%- if hasQueryParams(operation) == true %}{{ macro.list_query_params(operation.parameters, dsg.registry.ts.type_mapping) }}{% endif %}{{ "" }}
     ): Observable<{{ getModelByOperation(operation, 'models.', '{}') }}{% if operation|schema_type_of_operation( dsg.registry.ts.type_mapping) == "array" %}[]{% endif %}> {
 
         {{ macro.create_path(path, operation.parameters, dsg.registry.ts.type_mapping) }}
@@ -46,6 +48,9 @@ export class BaseApi{{ tag|class_name }} {
              queryParameters.set(key, extraHttpRequestParams[key]);
            }
         }
+{% if hasQueryParams(operation) == true %}
+{{ macro.redefine_query_params(operation.parameters) }}
+{% endif %}
 {{ macro.operation_params_require(operation.parameters, dsg.registry.ts.type_mapping, operation) }}
 
         const requestOptions: RequestOptionsArgs = {

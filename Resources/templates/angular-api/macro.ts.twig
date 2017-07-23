@@ -11,6 +11,16 @@ const routePath = `{{ path|ltrim('/') }}`;
 {% endmacro %}
 
 
+{% macro printParamType(parameter, type_mapping) %}
+{%- set type = parameter|convert_type(type_mapping) -%}
+{%- if type != "array" -%}
+    {{ type }}
+{%- else -%}
+    {{ "Array<" ~ parameter.items|convert_type(type_mapping) ~ ">" }}
+{%- endif -%}
+{% endmacro %}
+
+
 {% macro list_operation_params(operationParameters, type_mapping) %}
 {% for parameter in operationParameters %}
 {% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}
@@ -20,6 +30,7 @@ const routePath = `{{ path|ltrim('/') }}`;
 
 
 {% macro list_body_params(operationParameters, type_mapping) %}
+{% import _self as macro %}
 {% for parameter in operationParameters %}
 {% if parameter is instanceof("Draw\\Swagger\\Schema\\BodyParameter") %}
 {# if parameter is mapped to an entity (and we use converter="fos_rest.request_body"), body should contain a model#}
@@ -28,18 +39,22 @@ const routePath = `{{ path|ltrim('/') }}`;
 {%- else -%} {# if request parameters are mapped to simple arguments, we create a simple object with those params #}
 {
     {%- for propertyName, property in parameter.schema.properties -%}
-        {%- set type = property|convert_type(type_mapping) -%}
-        {{ propertyName ~ ": " }}
-        {%- if type != "array" -%}
-            {{ type }}
-        {%- else -%}
-            {{ property.items|convert_type(type_mapping) ~ "[]" }}
-        {%- endif -%}
+        {{ propertyName ~ ": " }}{{ macro.printParamType(property, type_mapping) }}
         {%- if loop.revindex != 1 %}, {% endif -%}
     {%- endfor -%}
 }
 {%- endif %}
 {% endif %}
+{% endfor %}
+{% endmacro %}
+
+
+{% macro list_query_params(operationParameters, type_mapping) %}
+{% import _self as macro %}
+{% for parameter in operationParameters %}
+    {%- if parameter is instanceof("Draw\\Swagger\\Schema\\QueryParameter") -%}
+            {{ "\n        "  ~ parameter.name }}{{ not parameter.required ? "?: " : ": " }}{{ macro.printParamType(parameter, type_mapping) }},
+    {%- endif -%}
 {% endfor %}
 {% endmacro %}
 
@@ -56,7 +71,6 @@ const routePath = `{{ path|ltrim('/') }}`;
 
 
 {% macro list_operation_params_doc(operationParameters, type_mapping) %}
-{% set params = "" %}
 {% for parameter in operationParameters %}
 {% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}
 {{ "\n     * @param " ~ parameter.name -}}
@@ -65,8 +79,17 @@ const routePath = `{{ path|ltrim('/') }}`;
 {% endmacro %}
 
 
+{% macro list_query_params_doc(operationParameters, type_mapping) %}
+{% import _self as macro %}
+{% for parameter in operationParameters %}
+{% if parameter is instanceof("Draw\\Swagger\\Schema\\QueryParameter") %}
+{{ "\n     * @param {" ~ macro.printParamType(parameter, type_mapping) ~ "} " ~ parameter.name ~ " " ~ parameter.description -}}
+{% endif %}
+{% endfor %}
+{% endmacro %}
+
+
 {% macro operation_params_require(operationParameters, type_mapping, operation) %}
-{% set params = "" %}
 {% for parameter in operationParameters %}
 {% if parameter is instanceof("Draw\\Swagger\\Schema\\PathParameter") %}
         if ({{ parameter.name }} === null || {{ parameter.name }} === undefined) {
@@ -75,6 +98,19 @@ const routePath = `{{ path|ltrim('/') }}`;
 {% endif %}
 {% endfor %}
 {% endmacro %}
+
+
+{% macro redefine_query_params(operationParameters) %}
+{% for parameter in operationParameters %}
+{% if parameter is instanceof("Draw\\Swagger\\Schema\\QueryParameter") %}
+        if ({{ parameter.name }} !== null && {{ parameter.name }} !== undefined) {
+            queryParameters.set(“{{ parameter.name }}”, {{ parameter.name }});
+        }
+{% endif-%}
+{% endfor %}
+{% endmacro %}
+
+
 {% macro handle_responses(operation) %}
 {% import _self as macro %}{% if operation.responses|length > 0 %}
 {% for responseCode, response in operation.responses %}
