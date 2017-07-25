@@ -26,7 +26,7 @@ export class BaseApi{{ tag|class_name }} {
     /**
      *{{ macro.list_operation_params_doc(operation.parameters, dsg.registry.ts.type_mapping) }}
      {%- if hasBodyParams(operation) == true %}{{ "\n     * @param body" }}{% endif %}{{ "" }}
-     * @param extraHttpRequestParams
+     * @param queries
      {%- if hasQueryParams(operation) == true %}{{ macro.list_query_params_doc(operation.parameters, dsg.registry.ts.type_mapping) }}{% endif %}{{ "" }}
      */
     public {{ operation.operationId|camelize|camelizeDash|lcfirst }} (
@@ -34,7 +34,7 @@ export class BaseApi{{ tag|class_name }} {
         {% if hasBodyParams(operation) == true -%}
         body?: {{ macro.list_body_params(operation.parameters, dsg.registry.ts.type_mapping) }},
         {% endif -%}
-        extraHttpRequestParams?: any,
+        queries?: any,
         {%- if hasQueryParams(operation) == true %}{{ macro.list_query_params(operation.parameters, dsg.registry.ts.type_mapping) }}{% endif %}{{ "" }}
     ): Observable<{{ getModelByOperation(operation, 'models.', '{}') }}{% if operation|schema_type_of_operation( dsg.registry.ts.type_mapping) == "array" %}[]{% endif %}> {
 
@@ -43,9 +43,11 @@ export class BaseApi{{ tag|class_name }} {
         const queryParameters = new URLSearchParams();
         const headerParams = this.defaultHeaders;
 
-        if (extraHttpRequestParams) {
-           for (let key in extraHttpRequestParams) {
-             queryParameters.set(key, extraHttpRequestParams[key].toString());
+        if (queries) {
+           for (let key in queries) {
+               if (queries[key]) {
+                   queryParameters.set(key, queries[key].toString());
+               }
            }
         }
 {% if hasQueryParams(operation) == true %}
