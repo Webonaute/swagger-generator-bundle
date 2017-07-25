@@ -104,7 +104,7 @@ const routePath = `{{ path|ltrim('/') }}`;
 {% for parameter in operationParameters %}
 {% if parameter is instanceof("Draw\\Swagger\\Schema\\QueryParameter") %}
         if ({{ parameter.name }} !== null && {{ parameter.name }} !== undefined) {
-            queryParameters.set("{{ parameter.name }}", {{ parameter.name }});
+            queryParameters.set('{{ parameter.name }}', {{ parameter.name }});
         }
 {% endif-%}
 {% endfor %}
