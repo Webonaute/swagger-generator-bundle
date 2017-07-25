@@ -7,7 +7,9 @@ draw_swagger_generator:
     registry:
       ts:
         type_mapping:
+          int: number
           integer: number
+          bool: boolean
           boolean: boolean
           string: string
           array: array
