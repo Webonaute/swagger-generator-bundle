@@ -45,11 +45,11 @@ export class BaseApi{{ tag|class_name }} {
 
         if (extraHttpRequestParams) {
            for (let key in extraHttpRequestParams) {
-             queryParameters.set(key, extraHttpRequestParams[key]);
+             queryParameters.set(key, extraHttpRequestParams[key].toString());
            }
         }
 {% if hasQueryParams(operation) == true %}
-{{ macro.redefine_query_params(operation.parameters) }}
+{{ macro.redefine_query_params(operation.parameters, dsg.registry.ts.type_mapping) }}
 {% endif %}
 {{ macro.operation_params_require(operation.parameters, dsg.registry.ts.type_mapping, operation) }}
 

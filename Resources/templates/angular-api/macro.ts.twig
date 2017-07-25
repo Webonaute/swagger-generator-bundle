@@ -100,11 +100,11 @@ const routePath = `{{ path|ltrim('/') }}`;
 {% endmacro %}
 
 
-{% macro redefine_query_params(operationParameters) %}
+{% macro redefine_query_params(operationParameters, type_mapping) %}
 {% for parameter in operationParameters %}
 {% if parameter is instanceof("Draw\\Swagger\\Schema\\QueryParameter") %}
         if ({{ parameter.name }} !== null && {{ parameter.name }} !== undefined) {
-            queryParameters.set('{{ parameter.name }}', {{ parameter.name }});
+            queryParameters.set('{{ parameter.name }}', {{ parameter.name }}{{ parameter|convert_type(type_mapping) in ['number', 'boolean'] ? '.toString()' }});
         }
 {% endif-%}
 {% endfor %}
