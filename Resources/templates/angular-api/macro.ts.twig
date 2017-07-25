@@ -83,7 +83,7 @@ const routePath = `{{ path|ltrim('/') }}`;
 {% import _self as macro %}
 {% for parameter in operationParameters %}
 {% if parameter is instanceof("Draw\\Swagger\\Schema\\QueryParameter") %}
-{{ "\n     * @param {" ~ macro.printParamType(parameter, type_mapping) ~ "} " ~ parameter.name ~ " " ~ parameter.description -}}
+{{ "\n     * @param {" ~ macro.printParamType(parameter, type_mapping) ~ "} " ~ parameter.name }}{{ parameter.description != null ? " " ~ parameter.description -}}
 {% endif %}
 {% endfor %}
 {% endmacro %}
