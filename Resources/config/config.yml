@@ -13,7 +13,7 @@ draw_swagger_generator:
           boolean: boolean
           string: string
           array: array
-          stdClass: object
+          stdClass: any
     php_functions:
       array_unique: ~
       iterator_to_array: ~
